@@ -10,7 +10,17 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/VitaliyKuz/prikm-bot-cursach.git'
             }
         }
-
+        stage('Set Permissions') {
+            steps {
+                sh 'chmod -R 755 provisioning dashboards'
+            }
+        }
+        stage('Verify Paths') {
+            steps {
+                sh 'ls -la ${PWD}/provisioning'
+                sh 'ls -la ${PWD}/dashboards'
+            }
+        }
         stage('Build and Run Docker Containers') {
             steps {
                 script {
@@ -79,12 +89,10 @@ pipeline {
                             -v /var/lib/docker/:/var/lib/docker:ro \
                             gcr.io/cadvisor/cadvisor:v0.47.0
                     """
-
                 }
             }
         }
     }
-
     post {
         always {
             cleanWs()
